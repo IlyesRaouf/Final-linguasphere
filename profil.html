@@ -1,0 +1,23 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Mon Profil - LinguaSphere{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2 class="gradient-text">Mon Profil</h2>
+    {% if username %}
+        <div class="user-info">
+            <div class="stat-card">
+                <p>Nom d'utilisateur : <strong>{{ username }}</strong></p>
+                <p>Email : <strong>{{ email }}</strong></p>
+                <p>Niveau actuel : <strong>{{ level }}</strong></p>
+                <p>Points : <strong>{{ points }}</strong></p>
+                <p><em>(Fonctionnalités de modification du profil à venir)</em></p>
+                <a href="{{ url_for('main_bp.dashboard') }}" class="edit-profile-btn">Retour au tableau de bord</a>
+            </div>
+        </div>
+    {% else %}
+        <p>Veuillez vous <a href="{{ url_for('auth_bp.login') }}">connecter</a> pour voir votre profil.</p>
+    {% endif %}
+</div>
+{% endblock %}

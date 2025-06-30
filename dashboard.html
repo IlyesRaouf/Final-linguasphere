@@ -1,0 +1,80 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Dashboard - LinguaSphere{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <section class="welcome-section">
+        <h1>Welcome, {{ username }}!</h1>
+        <div class="user-status">
+            <span class="status-badge">Level {{ current_user_level }}</span>
+            <span class="points-badge">{{ user_points }} points</span>
+            {% if user_badges %}
+            <div class="user-badges">
+                <h4>Recent Badges:</h4>
+                <ul class="badges-list">
+                    {% for badge in user_badges[:3] %}
+                        <li class="badge">{{ badge }}</li>
+                    {% endfor %}
+                </ul>
+                <a href="{{ url_for('main_bp.progression') }}" class="see-more">View all my progress</a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="quick-actions">
+        <a href="{{ url_for('main_bp.home') }}" class="action-card">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('main_bp.progression') }}" class="action-card">
+            <i class="fas fa-chart-line"></i>
+            <span>Progress</span>
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="action-card">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+    </section>
+
+    <section class="recent-activities">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+            {% if activities %}
+                {% for activity in activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-{{ 'trophy' if activity.activity_type == 'badge_earned' else 'book' }}"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h3>{{ 'Badge Earned' if activity.activity_type == 'badge_earned' else 'Dialogue Step' if activity.activity_type == 'dialogue_step' else 'Dialogue Completed' }}</h3>
+                            <p>{{ activity.description }}</p>
+                            {% if activity.points_earned > 0 %}
+                                <span class="activity-points">+{{ activity.points_earned }} points</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="activity-item">
+                    <div class="activity-details">
+                        <p>No recent activities yet. Start learning to see your progress!</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+<div id="chatbot-container">
+    <div id="chat-header">💬 Talk to Linguabot</div>
+    <div id="chat-window"></div>
+    <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off" required />
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+
+{% endblock %}

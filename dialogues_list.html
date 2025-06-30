@@ -1,0 +1,81 @@
+﻿{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2 class="page-title">🗣️ Interactive Dialogues</h2>
+<p class="subtitle">Choose a scenario to practice your English in a real-life context:</p>
+
+<div class="dialogue-list">
+    {% if dialogues %}
+        {% for dialogue in dialogues %}
+            <div class="dialogue-card {% if dialogue.locked %}locked{% endif %}">
+                <h3>{{ dialogue.title }}</h3>
+                <p>{{ dialogue.description }}</p>
+
+                {% if dialogue.locked %}
+                    <p class="locked-info">🔒 Locked - Coming soon!</p>
+                {% else %}
+                    <a href="{{ url_for('main_bp.dialogue_detail', dialogue_id=dialogue.id) }}" class="start-button">
+                        🚀 Start
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-dialogues">No dialogues available at the moment. Please check back soon!</p>
+    {% endif %}
+</div>
+
+<style>
+    .page-title {
+        font-size: 1.8em;
+        margin-bottom: 0.5em;
+    }
+    .subtitle {
+        margin-bottom: 1.5em;
+        color: #666;
+    }
+    .dialogue-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5em;
+    }
+    .dialogue-card {
+        padding: 1em;
+        border: 2px solid #ccc;
+        border-radius: 12px;
+        background-color: #f9f9f9;
+        transition: box-shadow 0.2s ease;
+    }
+    .dialogue-card:hover {
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+    .locked {
+        background-color: #eee;
+        color: #aaa;
+    }
+    .locked-info {
+        font-style: italic;
+        color: #b00;
+        margin-top: 0.5em;
+    }
+    .start-button {
+        display: inline-block;
+        padding: 0.5em 1em;
+        background-color: #007bff;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .start-button:hover {
+        background-color: #0056b3;
+    }
+    .no-dialogues {
+        font-style: italic;
+        color: #999;
+    }
+</style>
+{% endblock %}

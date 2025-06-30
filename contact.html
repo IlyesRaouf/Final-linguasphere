@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Contactez-Nous - LinguaSphere{% endblock %}
+
+{% block content %}
+    <h2>Contactez-Nous</h2>
+    <p>Vous avez une question, une suggestion ou besoin d_aide ? N_hésitez pas à nous contacter.</p>
+    
+    <form method="POST" action="#"> <!-- L_action du formulaire sera à définir si on implémente un envoi d_email ou une sauvegarde en BDD -->
+        <div>
+            <label for="name">Votre nom :</label><br>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <br>
+        <div>
+            <label for="email">Votre email :</label><br>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <br>
+        <div>
+            <label for="subject">Sujet :</label><br>
+            <input type="text" id="subject" name="subject" required>
+        </div>
+        <br>
+        <div>
+            <label for="message">Votre message :</label><br>
+            <textarea id="message" name="message" rows="5" required></textarea>
+        </div>
+        <br>
+        <div>
+            <input type="submit" value="Envoyer le message">
+        </div>
+    </form>
+    <p><em>Pour l_instant, ce formulaire est une démonstration. La fonctionnalité d_envoi sera implémentée ultérieurement.</em></p>
+{% endblock %}
+

@@ -1,0 +1,17 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Apprendre - LinguaSphere{% endblock %}
+
+{% block content %}
+    <h2>Que souhaitez-vous apprendre aujourd'hui ?</h2>
+    <p>Choisissez parmi nos modules d'apprentissage :</p>
+    <ul>
+        <li>
+            <a href="{{ url_for('main_bp.apprendre_dialogues') }}">Dialogues Interactifs</a> – Pratiquez des conversations courantes.
+        </li>
+        <li>
+            <a href="{{ url_for('main_bp.apprendre_contenus') }}">Contenus Créatifs</a> – Explorez des vidéos, podcasts et articles en anglais.
+        </li>
+        <!-- Ajouter d'autres modules ici plus tard -->
+    </ul>
+{% endblock %}

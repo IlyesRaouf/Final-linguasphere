@@ -1,0 +1,172 @@
+﻿{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="dialogue-container">
+    <h2 class="gradient-text">{{ title }}</h2>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ progress_percentage }}%;"></div>
+    </div>
+
+    <div class="dialogue-box">
+        <div class="message">
+            <strong class="speaker">Barista:</strong>
+            <p>{{ step_text }}</p>
+            <!-- Audio Player -->
+            {% if audio and audio != None %}
+            <audio id="dialogue-audio" src="{{ url_for('static', filename=audio) }}" preload="auto"></audio>
+            <button class="btn btn-wave" onclick="playAudio()">▶ Play Audio</button>
+            {% endif %}
+            <!-- Translation Toggle -->
+            <button class="btn btn-morph" onclick="toggleTranslation()">Show Translation</button>
+            <p id="translation" style="display: none; color: #666;">{{ translation_fr }}</p>
+            <!-- Grammar Tip -->
+            <button class="btn btn-wave" onclick="toggleGrammarTip()">Show Grammar Tip</button>
+            <p id="grammar-tip" style="display: none; color: #2c3e50; font-style: italic;">{{ grammar_tip }}</p>
+        </div>
+
+        {% if options %}
+            <form method="POST" action="{{ url_for('main_bp.dialogue_detail', dialogue_id=dialogue_id) }}" class="options-form">
+                {% for option_text, option_data in options %}
+                    <button type="submit" 
+                            name="user_choice" 
+                            value="{{ option_text }}"
+                            class="dialogue-option option-btn">
+                        {{ option_text }} (+{{ option_data.points }} points)
+                    </button>
+                {% endfor %}
+            </form>
+        {% else %}
+            <div class="dialogue-end">
+                <p class="gradient-text">Dialogue completed! 🎉</p>
+                <a href="{{ url_for('main_bp.reset_dialogue', dialogue_id=dialogue_id) }}" 
+                   class="restart-btn btn-wave">
+                    ↻ Restart Dialogue
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <a href="{{ url_for('main_bp.apprendre_dialogues') }}" class="back-link">← Back to Dialogue List</a>
+</div>
+
+<script>
+function toggleTranslation() {
+    const translation = document.getElementById('translation');
+    translation.style.display = translation.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleGrammarTip() {
+    const grammarTip = document.getElementById('grammar-tip');
+    grammarTip.style.display = grammarTip.style.display === 'none' ? 'block' : 'none';
+}
+
+function playAudio() {
+    const audio = document.getElementById('dialogue-audio');
+    audio.play().catch(function(error) {
+        console.error("Audio playback failed:", error);
+    });
+}
+</script>
+
+<style>
+.dialogue-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.dialogue-box {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.dialogue-box:hover {
+    box-shadow: var(--shadow-lg);
+    transform: scale(1.02);
+}
+
+.message {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.speaker {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.btn {
+    margin: 0.5rem 0;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.option-btn {
+    width: 100%;
+    text-align: left;
+    padding: 12px 20px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.option-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.dialogue-end {
+    background: #f0f9ff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    animation: pulse 2s infinite;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--primary), var(--primary-light));
+    border-radius: 5px;
+    transition: width 1s ease-in-out;
+}
+</style>
+{% endblock %}

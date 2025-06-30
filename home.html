@@ -1,0 +1,312 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Bienvenue{% endblock %}
+
+{% block content %}
+<div class="home-container">
+  <div class="owl-mascot-container">
+    <div class="owl-mascot" id="owlMascot">
+      <div class="owl-body">
+        <div class="owl-ear left"></div>
+        <div class="owl-ear right"></div>
+        <div class="owl-eye left"></div>
+        <div class="owl-eye right"></div>
+        <div class="owl-glasses">
+          <div class="owl-glasses-bridge"></div>
+        </div>
+        <div class="owl-beak"></div>
+        <div class="owl-wing left"></div>
+        <div class="owl-wing right"></div>
+        <div class="owl-leg left"></div>
+        <div class="owl-leg right"></div>
+        <div class="owl-book"></div>
+      </div>
+    </div>
+    <div class="speech-bubble">Bienvenue sur LinguaSphere !</div>
+    <div class="audio-controls">
+      <button class="audio-button" id="playPauseButton">
+        <span class="play-icon">▶</span>
+        <span class="pause-icon" style="display: none;">⏸</span>
+      </button>
+    </div>
+    <audio id="welcomeAudio" preload="auto">
+      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+      Votre navigateur ne supporte pas l'élément audio.
+    </audio>
+  </div>
+
+  <h1 class="gradient-text">🌟 Bienvenue sur LinguaSphere !</h1>
+  <p class="subtitle">Votre aventure d'apprentissage des langues commence ici</p>
+
+  <!-- Cercles colorés -->
+  <div class="color-cycle">
+    <div class="color-dot red"></div>
+    <div class="color-dot blue"></div>
+    <div class="color-dot green"></div>
+  </div>
+
+  <!-- Boutons d'authentification -->
+  <div class="auth-buttons">
+    <a href="{{ url_for('main_bp.apprendre_home') }}" class="btn btn-wave">Commencer à apprendre</a>
+    {% if 'user_id' not in session %}
+      <a href="{{ url_for('auth.login') }}" class="btn btn-morph">Se connecter</a>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-morph">Créer un compte</a>
+    {% else %}
+      <a href="{{ url_for('main_bp.dashboard') }}" class="btn btn-morph">Mon Tableau de bord</a>
+    {% endif %}
+  </div>
+
+  <!-- Carte "Donnez votre avis" -->
+  <div class="feedback-card">
+    <div class="language-selector">
+      <label for="languageSelect">Langue :</label>
+      <select id="languageSelect" name="language">
+        <option value="fr" selected>Français</option>
+        <option value="en">English</option>
+        <option value="ar">العربية</option>
+      </select>
+    </div>
+    <h2 id="feedbackTitle">Donnez votre avis</h2>
+    <p id="feedbackSubtitle">Partagez vos suggestions pour améliorer le site !</p>
+    <button class="btn give-feedback-btn" id="writeFeedbackBtn">Écrire un avis</button>
+  </div>
+
+  <!-- Formulaire d'avis -->
+  <div class="feedback-form" id="feedbackForm" style="display: none;">
+    <h2 id="formTitle">Votre avis</h2>
+    <form id="feedbackSubmitForm" method="POST" action="{{ url_for('main_bp.submit_feedback') }}">
+      <label for="feedbackDescription" id="descriptionLabel">Description</label>
+      <textarea id="feedbackDescription" name="description" placeholder="Qu'en pensez-vous ? Que manque-t-il ?..." rows="5"></textarea>
+
+      <label for="rating" id="ratingLabel">Note (sur 5)</label>
+      <div class="star-rating">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+        <input type="hidden" id="rating" name="rating" value="0">
+      </div>
+
+      <button type="submit" class="btn submit-feedback-btn" id="submitBtn">Soumettre</button>
+      <button type="button" class="btn cancel-feedback-btn" id="cancelBtn">Annuler</button>
+    </form>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const owlMascot = document.getElementById('owlMascot');
+    const welcomeAudio = document.getElementById('welcomeAudio');
+    const playPauseButton = document.getElementById('playPauseButton');
+    const playIcon = playPauseButton.querySelector('.play-icon');
+    const pauseIcon = playPauseButton.querySelector('.pause-icon');
+
+    // Jouer l'audio automatiquement au chargement de la page
+    welcomeAudio.play().then(() => {
+      owlMascot.classList.add('speaking');
+      playIcon.style.display = 'none';
+      pauseIcon.style.display = 'inline';
+    }).catch(error => {
+      console.log('Erreur lors de la lecture automatique:', error);
+    });
+
+    // Gestion du bouton lecture/pause
+    playPauseButton.addEventListener('click', () => {
+      if (welcomeAudio.paused) {
+        welcomeAudio.play();
+        owlMascot.classList.add('speaking');
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'inline';
+      } else {
+        welcomeAudio.pause();
+        owlMascot.classList.remove('speaking');
+        playIcon.style.display = 'inline';
+        pauseIcon.style.display = 'none';
+      }
+    });
+
+    // Ajouter la classe 'active' au clic sur le hibou
+    owlMascot.addEventListener('click', () => {
+      owlMascot.classList.add('active');
+    });
+
+    // Retirer la classe 'speaking' quand l'audio se termine
+    welcomeAudio.addEventListener('ended', () => {
+      owlMascot.classList.remove('speaking');
+      playIcon.style.display = 'inline';
+      pauseIcon.style.display = 'none';
+    });
+
+    // Traductions
+    const translations = {
+      fr: {
+        feedbackTitle: "Donnez votre avis",
+        feedbackSubtitle: "Partagez vos suggestions pour améliorer le site !",
+        writeFeedbackBtn: "Écrire un avis",
+        formTitle: "Votre avis",
+        descriptionLabel: "Description",
+        descriptionPlaceholder: "Qu'en pensez-vous ? Que manque-t-il ?...",
+        ratingLabel: "Note (sur 5)",
+        submitBtn: "Soumettre",
+        cancelBtn: "Annuler",
+        thankYouMessage: "Merci pour votre avis !"
+      },
+      en: {
+        feedbackTitle: "Give Your Feedback",
+        feedbackSubtitle: "Share your suggestions to improve the site!",
+        writeFeedbackBtn: "Write a Review",
+        formTitle: "Your Feedback",
+        descriptionLabel: "Description",
+        descriptionPlaceholder: "What do you think? What’s missing?...",
+        ratingLabel: "Rating (out of 5)",
+        submitBtn: "Submit",
+        cancelBtn: "Cancel",
+        thankYouMessage: "Thank you for your feedback!"
+      },
+      ar: {
+        feedbackTitle: "قدم رأيك",
+        feedbackSubtitle: "شارك اقتراحاتك لتحسين الموقع!",
+        writeFeedbackBtn: "كتابة رأي",
+        formTitle: "رأيك",
+        descriptionLabel: "الوصف",
+        descriptionPlaceholder: "ما رأيك؟ ما الذي ينقص؟...",
+        ratingLabel: "التقييم (من 5)",
+        submitBtn: "إرسال",
+        cancelBtn: "إلغاء",
+        thankYouMessage: "شكرًا على رأيك!"
+      }
+    };
+
+    // Éléments à traduire
+    const elements = {
+      feedbackTitle: document.getElementById('feedbackTitle'),
+      feedbackSubtitle: document.getElementById('feedbackSubtitle'),
+      writeFeedbackBtn: document.getElementById('writeFeedbackBtn'),
+      formTitle: document.getElementById('formTitle'),
+      descriptionLabel: document.getElementById('descriptionLabel'),
+      descriptionInput: document.getElementById('feedbackDescription'),
+      ratingLabel: document.getElementById('ratingLabel'),
+      submitBtn: document.getElementById('submitBtn'),
+      cancelBtn: document.getElementById('cancelBtn')
+    };
+
+    // Sélecteur de langue
+    const languageSelect = document.getElementById('languageSelect');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackCard = document.querySelector('.feedback-card');
+    const feedbackFormContainer = document.querySelector('.feedback-form');
+
+    // Fonction pour mettre à jour les traductions
+    function updateLanguage(lang) {
+      const texts = translations[lang];
+      elements.feedbackTitle.textContent = texts.feedbackTitle;
+      elements.feedbackSubtitle.textContent = texts.feedbackSubtitle;
+      elements.writeFeedbackBtn.textContent = texts.writeFeedbackBtn;
+      elements.formTitle.textContent = texts.formTitle;
+      elements.descriptionLabel.textContent = texts.descriptionLabel;
+      elements.descriptionInput.placeholder = texts.descriptionPlaceholder;
+      elements.ratingLabel.textContent = texts.ratingLabel;
+      elements.submitBtn.textContent = texts.submitBtn;
+      elements.cancelBtn.textContent = texts.cancelBtn;
+
+      // Gérer la direction du texte pour l'arabe (RTL)
+      if (lang === 'ar') {
+        feedbackCard.style.direction = 'rtl';
+        feedbackFormContainer.style.direction = 'rtl';
+        elements.descriptionInput.style.textAlign = 'right';
+      } else {
+        feedbackCard.style.direction = 'ltr';
+        feedbackFormContainer.style.direction = 'ltr';
+        elements.descriptionInput.style.textAlign = 'left';
+      }
+    }
+
+    // Initialiser avec le français
+    updateLanguage('fr');
+
+    // Écouteur pour le changement de langue
+    languageSelect.addEventListener('change', (e) => {
+      updateLanguage(e.target.value);
+    });
+
+    // Afficher/masquer le formulaire
+    const feedbackBtn = document.querySelector('.give-feedback-btn');
+    const cancelBtn = document.querySelector('.cancel-feedback-btn');
+
+    feedbackBtn.addEventListener('click', () => {
+      feedbackForm.style.display = 'block';
+      feedbackBtn.parentElement.style.display = 'none';
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      feedbackForm.style.display = 'none';
+      feedbackBtn.parentElement.style.display = 'block';
+      document.getElementById('feedbackSubmitForm').reset();
+      resetStars();
+    });
+
+    // Gestion des étoiles
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const value = parseInt(star.getAttribute('data-value'));
+        ratingInput.value = value;
+        updateStars(value);
+      });
+
+      star.addEventListener('mouseover', () => {
+        const value = parseInt(star.getAttribute('data-value'));
+        updateStars(value, true);
+      });
+
+      star.addEventListener('mouseout', () => {
+        updateStars(parseInt(ratingInput.value));
+      });
+    });
+
+    function updateStars(value, hover = false) {
+      stars.forEach(star => {
+        const starValue = parseInt(star.getAttribute('data-value'));
+        star.classList.remove('selected', 'hover');
+        if (starValue <= value && (hover || value > 0)) {
+          star.classList.add(hover ? 'hover' : 'selected');
+        }
+      });
+    }
+
+    function resetStars() {
+      updateStars(0);
+      ratingInput.value = 0;
+    }
+
+    // Gestion de la soumission
+    document.getElementById('feedbackSubmitForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(document.getElementById('feedbackSubmitForm'));
+      fetch('{{ url_for("main_bp.submit_feedback") }}', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        const currentLang = languageSelect.value;
+        if (data.success) {
+          alert(translations[currentLang].thankYouMessage);
+          feedbackForm.style.display = 'none';
+          feedbackBtn.parentElement.style.display = 'block';
+          document.getElementById('feedbackSubmitForm').reset();
+          resetStars();
+        } else {
+          alert(data.message || 'Erreur lors de la soumission. Veuillez réessayer.');
+        }
+      })
+      .catch(error => {
+        alert('Une erreur s\'est produite. Veuillez réessayer.');
+      });
+    });
+  });
+  </script>
+</div>
+{% endblock %}

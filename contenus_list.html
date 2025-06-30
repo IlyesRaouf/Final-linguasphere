@@ -1,0 +1,21 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Contenus Créatifs - LinguaSphere{% endblock %}
+
+{% block content %}
+    <h2>Contenus Créatifs</h2>
+    <p>Explorez nos ressources pour améliorer votre anglais :</p>
+    <ul>
+        {% if contenus %}
+            {% for item in contenus %}
+                <li>
+                    <strong>{{ item.title }}</strong> ({{ item.type }} - {{ item.level }})
+                   
+                    <a href="{{ item.url }}">Commencer cet apprentissage</a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>Aucun contenu disponible pour le moment. Revenez bientôt !</li>
+        {% endif %}
+    </ul>
+{% endblock %}

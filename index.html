@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application d'Apprentissage</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="content">
+        <h1>Bienvenue sur LinguaSphere</h1>
+        <nav>
+            <a href="/login">Connexion</a> |
+            <a href="/register">Inscription</a>
+        </nav>
+
+        <!-- Nouvelle carte "Donnez votre avis" -->
+        <div class="feedback-card">
+            <div class="language-selector">
+                <label for="languageSelect">Langue :</label>
+                <select id="languageSelect">
+                    <option value="fr" selected>Français</option>
+                    <option value="en">English</option>
+                    <option value="ar">???????</option>
+                </select>
+            </div>
+            <h2 id="feedbackTitle">Donnez votre avis</h2>
+            <p id="feedbackSubtitle">Partagez vos suggestions pour améliorer le site !</p>
+            <button class="btn give-feedback-btn" id="writeFeedbackBtn">Écrire un avis</button>
+        </div>
+
+        <!-- Formulaire d'avis (masqué par défaut) -->
+        <div class="feedback-form" id="feedbackForm" style="display: none;">
+            <h2 id="formTitle">Votre avis</h2>
+            <form id="feedbackSubmitForm">
+                <label for="feedbackDescription" id="descriptionLabel">Description</label>
+                <textarea id="feedbackDescription" name="description" placeholder="Qu'en pensez-vous ? Que manque-t-il ?..." rows="5"></textarea>
+
+                <label for="rating" id="ratingLabel">Note (sur 5)</label>
+                <div class="star-rating">
+                    <span class="star" data-value="1">?</span>
+                    <span class="star" data-value="2">?</span>
+                    <span class="star" data-value="3">?</span>
+                    <span class="star" data-value="4">?</span>
+                    <span class="star" data-value="5">?</span>
+                    <input type="hidden" id="rating" name="rating" value="0">
+                </div>
+
+                <button type="submit" class="btn submit-feedback-btn" id="submitBtn">Soumettre</button>
+                <button type="button" class="btn cancel-feedback-btn" id="cancelBtn">Annuler</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script pour gérer l'affichage du formulaire, les étoiles et les traductions -->
+    <script>
+        // Traductions
+        const translations = {
+            fr: {
+                feedbackTitle: "Donnez votre avis",
+                feedbackSubtitle: "Partagez vos suggestions pour améliorer le site !",
+                writeFeedbackBtn: "Écrire un avis",
+                formTitle: "Votre avis",
+                descriptionLabel: "Description",
+                descriptionPlaceholder: "Qu'en pensez-vous ? Que manque-t-il ?...",
+                ratingLabel: "Note (sur 5)",
+                submitBtn: "Soumettre",
+                cancelBtn: "Annuler",
+                thankYouMessage: "Merci pour votre avis !"
+            },
+            en: {
+                feedbackTitle: "Give Your Feedback",
+                feedbackSubtitle: "Share your suggestions to improve the site!",
+                writeFeedbackBtn: "Write a Review",
+                formTitle: "Your Feedback",
+                descriptionLabel: "Description",
+                descriptionPlaceholder: "What do you think? What’s missing?...",
+                ratingLabel: "Rating (out of 5)",
+                submitBtn: "Submit",
+                cancelBtn: "Cancel",
+                thankYouMessage: "Thank you for your feedback!"
+            },
+            ar: {
+                feedbackTitle: "??? ????",
+                feedbackSubtitle: "???? ????????? ?????? ??????!",
+                writeFeedbackBtn: "????? ???",
+                formTitle: "????",
+                descriptionLabel: "?????",
+                descriptionPlaceholder: "?? ????? ?? ???? ?????...",
+                ratingLabel: "??????? (?? 5)",
+                submitBtn: "?????",
+                cancelBtn: "?????",
+                thankYouMessage: "????? ??? ????!"
+            }
+        };
+
+        // Éléments à traduire
+        const elements = {
+            feedbackTitle: document.getElementById('feedbackTitle'),
+            feedbackSubtitle: document.getElementById('feedbackSubtitle'),
+            writeFeedbackBtn: document.getElementById('writeFeedbackBtn'),
+            formTitle: document.getElementById('formTitle'),
+            descriptionLabel: document.getElementById('descriptionLabel'),
+            descriptionInput: document.getElementById('feedbackDescription'),
+            ratingLabel: document.getElementById('ratingLabel'),
+            submitBtn: document.getElementById('submitBtn'),
+            cancelBtn: document.getElementById('cancelBtn')
+        };
+
+        // Sélecteur de langue
+        const languageSelect = document.getElementById('languageSelect');
+        const feedbackForm = document.getElementById('feedbackForm');
+        const feedbackCard = document.querySelector('.feedback-card');
+        const feedbackFormContainer = document.querySelector('.feedback-form');
+
+        // Fonction pour mettre à jour les traductions
+        function updateLanguage(lang) {
+            const texts = translations[lang];
+            elements.feedbackTitle.textContent = texts.feedbackTitle;
+            elements.feedbackSubtitle.textContent = texts.feedbackSubtitle;
+            elements.writeFeedbackBtn.textContent = texts.writeFeedbackBtn;
+            elements.formTitle.textContent = texts.formTitle;
+            elements.descriptionLabel.textContent = texts.descriptionLabel;
+            elements.descriptionInput.placeholder = texts.descriptionPlaceholder;
+            elements.ratingLabel.textContent = texts.ratingLabel;
+            elements.submitBtn.textContent = texts.submitBtn;
+            elements.cancelBtn.textContent = texts.cancelBtn;
+
+            // Gérer la direction du texte pour l'arabe (RTL)
+            if (lang === 'ar') {
+                feedbackCard.style.direction = 'rtl';
+                feedbackFormContainer.style.direction = 'rtl';
+                elements.descriptionInput.style.textAlign = 'right';
+            } else {
+                feedbackCard.style.direction = 'ltr';
+                feedbackFormContainer.style.direction = 'ltr';
+                elements.descriptionInput.style.textAlign = 'left';
+            }
+        }
+
+        // Écouteur pour le changement de langue
+        languageSelect.addEventListener('change', (e) => {
+            updateLanguage(e.target.value);
+        });
+
+        // Initialiser avec le français
+        updateLanguage('fr');
+
+        // Afficher/masquer le formulaire
+        const feedbackBtn = document.querySelector('.give-feedback-btn');
+        const cancelBtn = document.querySelector('.cancel-feedback-btn');
+
+        feedbackBtn.addEventListener('click', () => {
+            feedbackForm.style.display = 'block';
+            feedbackBtn.parentElement.style.display = 'none';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            feedbackForm.style.display = 'none';
+            feedbackBtn.parentElement.style.display = 'block';
+            document.getElementById('feedbackSubmitForm').reset();
+            resetStars();
+        });
+
+        // Gestion des étoiles
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = star.getAttribute('data-value');
+                ratingInput.value = value;
+
+                stars.forEach(s => {
+                    if (s.getAttribute('data-value') <= value) {
+                        s.classList.add('selected');
+                    } else {
+                        s.classList.remove('selected');
+                    }
+                });
+            });
+        });
+
+        function resetStars() {
+            stars.forEach(s => s.classList.remove('selected'));
+            ratingInput.value = 0;
+        }
+
+        // Gestion de la soumission (pour l'instant, juste un message)
+        document.getElementById('feedbackSubmitForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const currentLang = languageSelect.value;
+            alert(translations[currentLang].thankYouMessage);
+            feedbackForm.style.display = 'none';
+            feedbackBtn.parentElement.style.display = 'block';
+            document.getElementById('feedbackSubmitForm').reset();
+            resetStars();
+        });
+    </script>
+</body>
+</html>

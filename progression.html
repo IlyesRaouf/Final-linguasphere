@@ -1,0 +1,109 @@
+﻿{% extends "base.html" %}
+
+{% block title %}My Progress - LinguaSphere{% endblock %}
+
+{% block content %}
+<div class="progression-container fade-in">
+    <h2 class="gradient-text">My Progress</h2>
+    <p>Track your achievements and stay motivated!</p>
+    
+    <div class="progress-stats">
+        <div class="stat-card card-3d">
+            <h3>My Level</h3>
+            <div class="level-display">
+                <span class="level-number">{{ level }}</span>
+                <div class="level-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ (points / (points + points_needed) * 100) if points_needed > 0 else 100 }}%"></div>
+                    </div>
+                    <div class="progress-text">
+                        {% if next_level <= 5 %}
+                            {{ points }} / {{ points + points_needed }} points to level {{ next_level }}
+                        {% else %}
+                            {{ points }} points (Max level reached!)
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card card-3d">
+            <h3>Total Points</h3>
+            <p class="points-display">{{ points }}</p>
+        </div>
+    </div>
+
+    <div class="achievements-section fade-in">
+        <h3>My Badges</h3>
+        {% if badges %}
+            <div class="badges-grid">
+                {% for badge in badges %}
+                    <div class="badge-item badge-shine">
+                        <div class="badge-icon">🏆</div>
+                        <div class="badge-name">{{ badge }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">You haven't earned any badges yet. Keep learning to unlock them!</p>
+        {% endif %}
+    </div>
+    
+    <div class="completed-dialogues fade-in">
+        <h3>Completed Dialogues</h3>
+        {% if completed_dialogues %}
+            <div class="dialogues-list">
+                {% for dialogue in completed_dialogues %}
+                    <div class="dialogue-item card-3d">
+                        <div class="dialogue-title">{{ dialogue.title }}</div>
+                        <div class="dialogue-details">
+                            <span class="completion-date">{{ dialogue.completed_at }}</span>
+                            <span class="dialogue-points">+{{ dialogue.points }} points</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">You haven't completed any dialogues yet. Start learning!</p>
+        {% endif %}
+    </div>
+    
+    <div class="recent-activity fade-in">
+        <h3>Recent Activity</h3>
+        {% if activities %}
+            <div class="activity-timeline">
+                {% for activity in activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            {% if activity.activity_type == 'dialogue_completed' %}
+                                📝
+                            {% elif activity.activity_type == 'badge_earned' %}
+                                🏆
+                            {% elif activity.activity_type == 'level_up' %}
+                                ⬆️
+                            {% else %}
+                                🔔
+                            {% endif %}
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">{{ activity.description }}</div>
+                            <div class="activity-meta">
+                                <span class="activity-time">{{ activity.timestamp.strftime('%d/%m/%Y %H:%M') }}</span>
+                                {% if activity.points_earned > 0 %}
+                                    <span class="activity-points">+{{ activity.points_earned }} points</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">No recent activity. Start learning to see your progress!</p>
+        {% endif %}
+    </div>
+    
+    <a href="{{ url_for('main_bp.dashboard') }}" class="back-button btn-wave">Back to Dashboard</a>
+</div>
+{% endblock %}
+
+
